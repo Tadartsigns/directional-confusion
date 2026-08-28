@@ -6,10 +6,88 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b0b0d" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Confusion Tuner" />
   <title>Directional Confusion — Dual Speaker</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<p>Loading tuner… If this stays, the full app did not upload. Open the repo and replace index.html.</p>
-<script>location.replace('./app.html')</script>
+  <div class="topbar">
+    <div class="controls-row">
+      <button id="btnStart" class="btn-start" type="button">START</button>
+      <button id="btnStop" class="btn-stop" type="button">STOP</button>
+      <div class="vol-wrap">
+        <label>Volume <span id="volRead">80%</span></label>
+        <input id="vol" class="hot" type="range" min="0" max="300" value="80" />
+      </div>
+    </div>
+    <div class="status">
+      <span><span class="dot" id="runDot"></span><span id="runLabel">Stopped</span></span>
+      <span>L <b id="readL">—</b> Hz</span>
+      <span>R <b id="readR">—</b> Hz</span>
+      <span>Pan <b id="readPan">—</b></span>
+    </div>
+  </div>
+  <h1>Directional Confusion Engine</h1>
+  <p class="sub">Two Monster S290 · 40 ft apart · slow source drift</p>
+  <button type="button" class="tuner-toggle" id="btnStandalone">Standalone tuner — hide presets</button>
+  <div class="warn">Use at your own risk. High / long-duration tones can cause discomfort, headaches, or hearing damage. Keep sessions short. Do not aim this at people who have not agreed to it.</div>
+  <section class="hide-in-tuner">
+    <h2>Speaker setup — Monster S290</h2>
+    <p class="note">These speakers are <strong>TWS stereo</strong>. Pair the two S290 units first, then connect this phone to <em>one</em> of them. Left goes to one cabinet, right to the other.</p>
+  </section>
+  <section class="hide-in-tuner"><h2>Built-in presets</h2><div class="grid wide" id="presetGrid"></div></section>
+  <section class="hide-in-tuner"><h2>High-pitch presets</h2><div class="grid" id="highGrid"></div></section>
+  <section class="hide-in-tuner"><h2>Extreme options</h2><div class="grid" id="extremeGrid"></div></section>
+  <section id="tuneSection">
+    <h2>Tune — standalone L / R fields</h2>
+    <p class="fine">Type exact Hertz, then tap Tune. Channels stay independent unless you tap Link.</p>
+    <div class="channels">
+      <div class="channel left">
+        <h3>Left field</h3>
+        <div class="hz-entry"><input id="lHzNum" type="number" inputmode="numeric" min="20" max="20000" step="1" value="3200" /><span class="unit">HZ</span></div>
+        <div class="field"><div class="slider-head">Coarse <span id="lHzRead">3200</span></div><input id="lHz" type="range" min="20" max="20000" step="1" value="3200" /></div>
+        <div class="field"><label>Fine ±50 <span id="lFineRead">0.0</span></label><input id="lFine" type="range" min="-50" max="50" step="0.1" value="0" /></div>
+        <button type="button" class="btn-tune" id="btnTuneL">Tune left</button>
+      </div>
+      <div class="channel right">
+        <h3>Right field</h3>
+        <div class="hz-entry"><input id="rHzNum" type="number" inputmode="numeric" min="20" max="20000" step="1" value="2870" /><span class="unit">HZ</span></div>
+        <div class="field"><div class="slider-head">Coarse <span id="rHzRead">2870</span></div><input id="rHz" type="range" min="20" max="20000" step="1" value="2870" /></div>
+        <div class="field"><label>Fine ±50 <span id="rFineRead">0.0</span></label><input id="rFine" type="range" min="-50" max="50" step="0.1" value="0" /></div>
+        <button type="button" class="btn-tune" id="btnTuneR">Tune right</button>
+      </div>
+    </div>
+    <div class="link-row">
+      <button type="button" id="btnLink">Link L↔R offset</button>
+      <button type="button" id="btnTuneBoth">Tune both</button>
+      <button type="button" id="btnResetOverlay">Clear overlay</button>
+    </div>
+    <div class="field" style="margin:12px 0">
+      <div class="slider-head">Optional overlay <span id="masterTuneRead">0</span></div>
+      <input id="masterTune" type="range" min="-2000" max="2000" step="1" value="0" />
+    </div>
+    <div class="seg" id="waveSeg">
+      <button type="button" data-w="sine" class="active">Sine</button>
+      <button type="button" data-w="triangle">Tri</button>
+      <button type="button" data-w="square">Sqr</button>
+      <button type="button" data-w="sawtooth">Saw</button>
+    </div>
+  </section>
+  <section>
+    <h2>Motion</h2>
+    <div class="field"><div class="slider-head">Pan drift <span id="panRateRead">0.06 Hz</span></div><input id="panRate" type="range" min="0" max="40" step="1" value="6" /></div>
+    <div class="field"><div class="slider-head">Pan depth <span id="panDepthRead">100%</span></div><input id="panDepth" type="range" min="0" max="100" value="100" /></div>
+    <div class="field"><div class="slider-head">Frequency wander <span id="wanderRead">18 Hz</span></div><input id="wander" type="range" min="0" max="400" value="18" /></div>
+    <div class="field"><div class="slider-head">Wander cycle <span id="wanderTRead">22 s</span></div><input id="wanderT" type="range" min="4" max="90" value="22" /></div>
+    <div class="field"><div class="slider-head">Pulse <span id="pulseRead">off</span></div><input id="pulse" type="range" min="0" max="80" value="0" /></div>
+  </section>
+  <section class="hide-in-tuner">
+    <h2>Save presets</h2>
+    <div class="row"><input id="presetName" type="text" placeholder="Name this setup" maxlength="40" /></div>
+    <div class="actions"><button type="button" id="btnSave">Save current</button><button type="button" id="btnExport">Copy JSON</button></div>
+    <div id="savedList" class="grid" style="margin-top:12px"></div>
+  </section>
+  <script src="app.js"></script>
 </body>
 </html>
